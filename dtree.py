@@ -68,13 +68,18 @@ class TreeNode:
     def __repr__(self):
         "Produce readable (string) representation of the tree"
         accum = str(self.attribute) + '('
-        for x in sorted(self.branches):
-            accum += str(self.branches[x])
+        accum += ', '.join(map(str, [self.branches[key] for key in sorted(self.branches)] ))
+        #for x in sorted(self.branches):
+        #    accum += str(self.branches[x])
         return accum + ')'
 
     def depth(self):
         "Count the levels below this one"
         return 1 + max([ self.branches[x].depth() for x in self.branches ])
+
+    def nodeCount(self):
+        "Count the nodes starting from this one"
+        return 1 + sum([ self.branches[x].nodeCount() for x in self.branches ])
 
 
 class TreeLeaf:
@@ -91,6 +96,9 @@ class TreeLeaf:
 
     def depth(self):
         "Count the levels below this one: 0"
+        return 0
+
+    def nodeCount(self):
         return 0
 
 def buildTree(dataset, attributes, maxdepth=1000000):
