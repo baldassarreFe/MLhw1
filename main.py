@@ -9,28 +9,40 @@ monks = {'monk1':m.monk1, 'monk2':m.monk2, 'monk3':m.monk3}
 monktests = {'monk1':m.monk1test, 'monk2':m.monk2test, 'monk3':m.monk3test}
 # Entropy
 
-entropyTable = []
+entropyTable = {}
 for key in monks:
-	entropyTable.append([key, entropy(monks[key])])
+	entropyTable[key] = entropy(monks[key])
 
-print entropyTable
+print "Entropy table"
+for key in sorted(entropyTable):
+	print key, '\t', entropyTable[key]
 #print len([item.attribute[4] for item in m.monk1 if item.attribute[4] ==1])
 
 
 # Information Gain
 
-infoGainTable = []
-for key in monks:
+infoGainTable = {}
+for key in sorted(monks):
 	gains = []
 	for a in m.attributes:
 		gains.append(averageGain(monks[key], a))
-	infoGainTable.append([key, dict(zip(m.attributes, gains))])
+	infoGainTable[key] = dict(zip(m.attributes, gains))
 
-print infoGainTable
+print "Information gain table"
+line = ""
+for a in m.attributes:
+	line += '\t' + a.name
+print line
+
+for key in sorted(infoGainTable):
+	line = key
+	for a in sorted(infoGainTable[key]):
+		line += '\t' + "{0:.5f}".format(infoGainTable[key][a])
+	print line
 
 # best attribute for monk1 is A5, monk2 is A5, monk3 is A2
 print "best attributes for first split:"
-for key in monks:
+for key in sorted(monks):
 	print key, bestAttribute(monks[key], m.attributes)
 
 
@@ -67,7 +79,21 @@ print "depth", tree.depth()
 # drawTree(tree)
 
 # full decision trees for all monks
-for key in monks:
+print "Full decision trees for all monks, learning from all the learning data"
+print "Accuracy for training set and testing set:"
+for key in sorted(monks):
 	tree = buildTree(monks[key], m.attributes)
 	# print tree
 	print key, check(tree, monks[key]), check(tree, monktests[key])
+
+# training and pruning
+
+print "Full and pruned decision trees for all monks, learning from 0.6 of all the learning data"
+print "Accuracy for training set and testing set"
+for key in sorted(monks):
+	training, validation = partition(monks[key], 0.6)
+	tree = buildTree(training, m.attributes)
+	prunedTree = prune(tree, validation)
+
+	print key,"before pruning", check(tree, monks[key]), check(tree, monktests[key])
+	print key," after pruning", check(prunedTree, monks[key]), check(prunedTree, monktests[key])

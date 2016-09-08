@@ -1,5 +1,5 @@
 import math
-
+import random
 
 def entropy(dataset):
     "Calculate the entropy of a dataset"
@@ -129,6 +129,23 @@ def check(tree, testdata):
         if classify(tree, x) == x.positive:
             correct += 1
     return float(correct)/len(testdata)
+
+def partition(data, fraction):
+    ldata = list(data)
+    random.shuffle(ldata)
+    breakPoint = int(len(ldata) * fraction)
+    return ldata[:breakPoint], ldata[breakPoint:]
+
+def prune(tree, validation):
+#   allPrunedTrees = allPruned(tree)
+#   best = 0
+#   bestTree = None
+#   for t in allPrunedTrees:
+#       if best<check(t, validation):
+#           bestTree = t
+#   return bestTree
+    return max( [(check(t,validation), t) for t in allPruned(tree)], key=lambda x: x[0]) [1]
+
 
 
 def allPruned(tree):
