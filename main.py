@@ -89,17 +89,25 @@ for key in sorted(monks):
 # training and pruning
 
 print "\nFull and pruned decision trees for all monks, learning from 0.6 of all the learning data"
-print "Accuracy for training set and testing set"
+print "Depth, accuracy for training set, validation set and testing set"
 for key in sorted(monks):
 	training, validation = partition(monks[key], 0.6)
 	tree = buildTree(training, m.attributes)
 	prunedTree = prune(tree, validation)
-
-	print key
-	print "before", tree
-	print check(tree, monks[key]), check(tree, monktests[key])
-	print "depth", tree.depth()
 	print
-	print "after", prunedTree
-	print check(prunedTree, monks[key]), check(prunedTree, monktests[key])
-	print "depth", prunedTree.depth()
+	print key
+	print "BEFORE",tree.depth(), check(tree, training), check(tree, validation), check(tree, monktests[key])
+	print "PRUNED",prunedTree.depth(), check(prunedTree, training), check(prunedTree, validation), check(prunedTree, monktests[key])
+
+
+for key in sorted(monks):
+	for fraction in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+		training, validation = partition(monks[key], fraction)
+		tree = buildTree(training, m.attributes)
+		prunedTree = prune(tree, validation)
+		acc1 = check(tree, monktests[key])
+		acc2 = check(prunedTree, monktests[key])
+		print key, fraction, acc1, acc2, (acc2-acc1)/acc2
+
+
+
