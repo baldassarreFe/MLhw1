@@ -72,6 +72,10 @@ class TreeNode:
             accum += str(self.branches[x])
         return accum + ')'
 
+    def depth(self):
+        "Count the levels below this one"
+        return 1 + max([ self.branches[x].depth() for x in self.branches ])
+
 
 class TreeLeaf:
     "Decision tree representation for leaf nodes"
@@ -85,6 +89,9 @@ class TreeLeaf:
             return '+'
         return '-'
 
+    def depth(self):
+        "Count the levels below this one: 0"
+        return 0
 
 def buildTree(dataset, attributes, maxdepth=1000000):
     "Recursively build a decision tree"
@@ -98,7 +105,7 @@ def buildTree(dataset, attributes, maxdepth=1000000):
             return TreeLeaf(False)
         return buildTree(dataset, attributes, maxdepth-1)
 
-    default = on(dataset)
+    default = mostCommon(dataset)
     if maxdepth < 1:
         return TreeLeaf(default)
     a = bestAttribute(dataset, attributes)

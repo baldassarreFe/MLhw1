@@ -3,9 +3,10 @@ import numpy
 import monkdata as m
 
 from dtree import *
-from drawtree import drawTree
+# from drawtree import drawTree
 
 monks = {'monk1':m.monk1, 'monk2':m.monk2, 'monk3':m.monk3}
+monktests = {'monk1':m.monk1test, 'monk2':m.monk2test, 'monk3':m.monk3test}
 # Entropy
 
 entropyTable = []
@@ -61,5 +62,12 @@ for value in split1.subsets:
 
 # 2 levels tree for monk1 using buildTree
 tree =  buildTree(monks['monk1'], m.attributes, 2)
-print tree
-drawTree(tree)
+print "tree", tree
+print "depth", tree.depth()
+# drawTree(tree)
+
+# full decision trees for all monks
+for key in monks:
+	tree = buildTree(monks[key], m.attributes)
+	# print tree
+	print key, check(tree, monks[key]), check(tree, monktests[key])
