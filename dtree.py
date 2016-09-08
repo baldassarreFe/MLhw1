@@ -34,6 +34,9 @@ def select(dataset, attribute, value):
 def bestAttribute(dataset, attributes):
     "Attribute with highest expected information gain"
     gains = [(averageGain(dataset, a), a) for a in attributes]
+    # take the gains dict, select the tuple that has the max value for the key
+    # (which is x[0] for every tuple x), from this tuple output the attribute,
+    # which is stored in [1]
     return max(gains, key=lambda x: x[0])[1]
 
 
@@ -106,7 +109,7 @@ def buildTree(dataset, attributes, maxdepth=1000000):
 
 
 def classify(tree, sample):
-    "Classify a sample using the given decition tree"
+    "Classify a sample using the given decision tree"
     if isinstance(tree, TreeLeaf):
         return tree.cvalue
     return classify(tree.branches[sample.attribute[tree.attribute]], sample)
