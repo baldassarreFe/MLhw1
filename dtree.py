@@ -98,7 +98,7 @@ def buildTree(dataset, attributes, maxdepth=1000000):
             return TreeLeaf(False)
         return buildTree(dataset, attributes, maxdepth-1)
 
-    default = mostCommon(dataset)
+    default = on(dataset)
     if maxdepth < 1:
         return TreeLeaf(default)
     a = bestAttribute(dataset, attributes)
