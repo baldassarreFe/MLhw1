@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
-import sys
 import dtree
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
-from PyQt5.QtGui import QPainter, QColor, QPen
-from PyQt5 import QtCore
+import sys
+from PyQt4 import Qt, QtCore, QtGui
 
-
-class MyPainting(QWidget):
+class MyPainting(QtGui.QWidget):
     def __init__(self, parent, tree):
-        QWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent)
         self.tree = tree
         self.xsize = 600
         self.ysize = 300
@@ -29,9 +26,9 @@ class MyPainting(QWidget):
         return 10 + (y/12.0)*(self.ysize - 20)
 
     def paintEvent(self, ev):
-        p = QPainter()
+        p = QtGui.QPainter()
         p.begin(self)
-        p.setPen (QPen(QColor(0,0,0), 1))
+        p.setPen (QtGui.QPen(QtGui.QColor(0,0,0), 1))
 
         draw(p, self.tree, 10, 10)
 
@@ -56,22 +53,19 @@ def draw(p, t, x, y):
     return newMid, xx+10
 
 
-class MyMainWindow( QMainWindow ):
+class MyMainWindow( QtGui.QMainWindow ):
     def __init__(self, tree):
-        QMainWindow.__init__( self )
+        QtGui.QMainWindow.__init__( self )
 
         paint = MyPainting(self, tree)
-        
 
         self.setCentralWidget(paint)
 
         self.show()
-        
 
 
 def drawTree(tree):
-    application = QApplication( sys.argv )
+    application = QtGui.QApplication( sys.argv )
     win = MyMainWindow(tree)
     win.show()
-    application.exec_()
-    #sys.exit(application.exec_())
+    sys.exit(application.exec_())

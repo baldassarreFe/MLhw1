@@ -3,7 +3,7 @@ import numpy
 import monkdata as m
 
 from dtree import *
-# from drawtree import drawTree
+from drawtree import drawTree
 
 def giveMeSomeSpace():
 	print '_'*80 + '\n'
@@ -104,6 +104,7 @@ for key in sorted(monks):
 	print '\t'.join([key,"Depth","Size", "Acc training", "Acc validation", "Acc testing"])
 	print '\t'.join(map(str,["BEFORE",tree.depth(), tree.nodeCount()]+map("{0:.5f}\t".format,[check(tree, training), check(tree, validation), check(tree, monktests[key])])))
 	print '\t'.join(map(str,["PRUNED",prunedTree.depth(), tree.nodeCount()]+map("{0:.5f}\t".format,[check(prunedTree, training), check(prunedTree, validation), check(prunedTree, monktests[key])])))
+	drawTree(tree)
 
 # Testing different ratios for training and validation
 giveMeSomeSpace()
