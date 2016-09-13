@@ -87,11 +87,11 @@ print "Size:", tree.nodeCount()
 # Full decision trees for all monks
 giveMeSomeSpace()
 print "Accuracies of the full decision trees, learning from 100% of the training data"
-print "\t\tOn training\tOn testing"
+print "\t\tOn training\tOn testing\tNodes"
 for key in sorted(monks):
 	tree = buildTree(monks[key], m.attributes)
 	# print tree
-	print '\t\t'.join(map(str, [key] + map("{0:.5f}".format, [check(tree, monks[key]), check(tree, monktests[key])])))
+	print '\t\t'.join(map(str, [key] + map("{0:.5f}".format, [check(tree, monks[key]), check(tree, monktests[key])]) + [tree.nodeCount()]))
 
 # Training and pruning
 giveMeSomeSpace()
