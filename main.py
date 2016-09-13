@@ -1,9 +1,9 @@
-import numpy
-
+#import numpy
+import csv
 import monkdata as m
 
 from dtree import *
-from drawtree import drawTree
+#from drawtree import drawTree
 
 def giveMeSomeSpace():
 	print '_'*80 + '\n'
@@ -104,18 +104,67 @@ for key in sorted(monks):
 	print '\t'.join([key,"Depth","Size", "Acc training", "Acc validation", "Acc testing"])
 	print '\t'.join(map(str,["BEFORE",tree.depth(), tree.nodeCount()]+map("{0:.5f}\t".format,[check(tree, training), check(tree, validation), check(tree, monktests[key])])))
 	print '\t'.join(map(str,["PRUNED",prunedTree.depth(), tree.nodeCount()]+map("{0:.5f}\t".format,[check(prunedTree, training), check(prunedTree, validation), check(prunedTree, monktests[key])])))
-	drawTree(tree)
+	#drawTree(tree)
 
 # Testing different ratios for training and validation
 giveMeSomeSpace()
 print "Testing different ratios for splitting the training data over actual training and validation for pruning"
+
+with open("output_1.csv", "wb") as f:
+	writer = csv.writer(f)
+	for key in sorted(monks):
+		print
+		print '\t'.join([key,"Ratio","Full", "Pruned", "Improvement"])
+		for fraction in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+			training, validation = partition(monks[key], fraction)
+			tree = buildTree(training, m.attributes)
+			prunedTree = prune(tree, validation)
+			acc1 = check(tree, monktests[key])
+			acc2 = check(prunedTree, monktests[key])
+			print '\t'.join(["      ",`fraction`] + map("{0:.5f}".format,[acc1, acc2, (acc2-acc1)/acc2]))
+			writer.writerow([fraction, acc1, acc2, (acc2-acc1)/acc2])
+
+
+# Running optimisation 100 times
+giveMeSomeSpace()
+print "Optimisation results averaged over 100 trials"
+
+# Initialize optimal pruning partition results table
+noTrials = 100
+optimResTable = {'monk-1':{}, 'monk-2':{}, 'monk-3':{}}
 for key in sorted(monks):
-	print
-	print '\t'.join([key,"Ratio","Full", "Pruned", "Improvement"])
 	for fraction in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
-		training, validation = partition(monks[key], fraction)
-		tree = buildTree(training, m.attributes)
-		prunedTree = prune(tree, validation)
-		acc1 = check(tree, monktests[key])
-		acc2 = check(prunedTree, monktests[key])
-		print '\t'.join(["      ",`fraction`] + map("{0:.5f}".format,[acc1, acc2, (acc2-acc1)/acc2]))
+		optimResTable[key][fraction] = [0, 0, 0] # "Full", "Pruned", "Improvement"
+
+# Sum values over 100 trials
+for iteration in range(1, noTrials):
+	for key in sorted(monks):
+			for fraction in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+				training, validation = partition(monks[key], fraction)
+				tree = buildTree(training, m.attributes)
+				prunedTree = prune(tree, validation)
+				acc1 = check(tree, monktests[key])
+				acc2 = check(prunedTree, monktests[key])
+				#print '\t'.join(["      ",`fraction`] + map("{0:.5f}".format,[acc1, acc2, (acc2-acc1)/acc2]))
+				optimResTable[key][fraction][0] += acc1
+				optimResTable[key][fraction][1] += acc2
+				optimResTable[key][fraction][2] += (acc2-acc1)/acc2
+
+# Average values over 100 trials
+for key in sorted(monks):
+	for fraction in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+		for i in range(0,3):
+			optimResTable[key][fraction][i] =  optimResTable[key][fraction][i] / noTrials
+
+# Print and save to CSV
+with open("output_100.csv", "wb") as f:
+	writer = csv.writer(f)
+	for key in sorted(monks):
+		print
+		print '\t'.join([key,"Ratio","Fl(avg)", "Pr(avg)", "Imp(avg)"])
+		for fraction in [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]:
+			a1 = optimResTable[key][fraction][0]
+			a2 = optimResTable[key][fraction][1]
+			a3 = optimResTable[key][fraction][2]
+			print '\t'.join(["      ",`fraction`] + map("{0:.5f}".format,[a1, a2, a3]))
+			writer.writerow([fraction, a1, a2, a3])
